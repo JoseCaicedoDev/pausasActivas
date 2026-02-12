@@ -1,5 +1,9 @@
 import { ref } from 'vue'
 
+const baseUrl = import.meta.env.BASE_URL || '/'
+const iconPath = `${baseUrl}icons/icon-192x192.png`
+const badgePath = `${baseUrl}icons/icon-72x72.png`
+
 export function useNotification() {
   const permissionGranted = ref(Notification.permission === 'granted')
 
@@ -27,8 +31,8 @@ export function useNotification() {
     } else {
       new Notification(title, {
         body,
-        icon: '/icons/icon-192x192.png',
-        badge: '/icons/icon-72x72.png',
+        icon: iconPath,
+        badge: badgePath,
         tag: 'pausas-activas',
       })
     }

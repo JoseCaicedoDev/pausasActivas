@@ -4,6 +4,10 @@ import { clientsClaim } from 'workbox-core'
 
 declare let self: ServiceWorkerGlobalScope
 
+const baseUrl = import.meta.env.BASE_URL || '/'
+const icon192 = `${baseUrl}icons/icon-192x192.png`
+const icon72 = `${baseUrl}icons/icon-72x72.png`
+
 self.skipWaiting()
 clientsClaim()
 
@@ -24,8 +28,8 @@ self.addEventListener('message', (event) => {
     const timeoutId = setTimeout(() => {
       self.registration.showNotification(title, {
         body,
-        icon: '/icons/icon-192x192.png',
-        badge: '/icons/icon-72x72.png',
+        icon: icon192,
+        badge: icon72,
         tag: 'break-reminder',
         requireInteraction: true,
       } as NotificationOptions)
@@ -39,8 +43,8 @@ self.addEventListener('message', (event) => {
     const { title, body } = payload
     self.registration.showNotification(title, {
       body,
-      icon: '/icons/icon-192x192.png',
-      badge: '/icons/icon-72x72.png',
+      icon: icon192,
+      badge: icon72,
       tag: 'pausas-activas',
     })
   }
@@ -57,14 +61,14 @@ self.addEventListener('notificationclick', (event) => {
           ;(client as WindowClient).focus()
           return
         }
-        self.clients.openWindow('/')
+        self.clients.openWindow(baseUrl)
       }),
     )
   } else if (event.action === 'snooze') {
     setTimeout(() => {
       self.registration.showNotification('Pausas Activas - Recordatorio', {
         body: 'Tu pausa activa esta pendiente. Es hora de cuidar tu salud.',
-        icon: '/icons/icon-192x192.png',
+        icon: icon192,
         tag: 'break-reminder',
         requireInteraction: true,
       })
@@ -76,7 +80,7 @@ self.addEventListener('notificationclick', (event) => {
         if (first) {
           ;(first as WindowClient).focus()
         } else {
-          self.clients.openWindow('/')
+          self.clients.openWindow(baseUrl)
         }
       }),
     )
