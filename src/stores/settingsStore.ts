@@ -4,6 +4,25 @@ import type { AppSettings, ThemeMode, AlarmType } from '@/types/settings'
 import { DEFAULT_SETTINGS } from '@/types/settings'
 import { apiRequest } from '@/services/apiClient'
 
+const WORK_INTERVAL_OPTIONS = [60, 120, 180, 240, 300] as const
+
+function normalizeWorkInterval(minutes: number): number {
+  if (!Number.isFinite(minutes)) return DEFAULT_SETTINGS.workIntervalMinutes
+
+  let closest: number = WORK_INTERVAL_OPTIONS[0]
+  let minDistance = Math.abs(minutes - closest)
+
+  for (const option of WORK_INTERVAL_OPTIONS.slice(1)) {
+    const distance = Math.abs(minutes - option)
+    if (distance < minDistance || (distance === minDistance && option < closest)) {
+      closest = option
+      minDistance = distance
+    }
+  }
+
+  return closest
+}
+
 export const useSettingsStore = defineStore('settings', () => {
   const settings = ref<AppSettings>({ ...DEFAULT_SETTINGS })
 
@@ -20,8 +39,10 @@ export const useSettingsStore = defineStore('settings', () => {
     try {
       const remote = await apiRequest<Partial<AppSettings>>('/settings/me', { method: 'GET' })
       settings.value = { ...DEFAULT_SETTINGS, ...remote }
+      settings.value.workIntervalMinutes = normalizeWorkInterval(settings.value.workIntervalMinutes)
     } catch {
       settings.value = { ...DEFAULT_SETTINGS }
+      settings.value.workIntervalMinutes = normalizeWorkInterval(settings.value.workIntervalMinutes)
     } finally {
       applyTheme(settings.value.theme)
       isLoaded.value = true
@@ -59,7 +80,7 @@ export const useSettingsStore = defineStore('settings', () => {
   }
 
   async function setWorkInterval(minutes: number): Promise<void> {
-    settings.value.workIntervalMinutes = minutes
+    settings.value.workIntervalMinutes = normalizeWorkInterval(minutes)
     await persistSettings()
   }
 

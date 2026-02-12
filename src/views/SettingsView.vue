@@ -30,15 +30,17 @@ function testAlarm() {
       <h3 class="font-semibold text-sm text-pa-text-muted uppercase tracking-wider">Temporizador</h3>
 
       <div class="flex items-center justify-between">
-        <label class="text-sm">Intervalo de trabajo (minutos)</label>
+        <label class="text-sm">Intervalo de trabajo (horas)</label>
         <select
           :value="settings.settings.workIntervalMinutes"
           class="bg-pa-bg border border-pa-surface-hover rounded-lg px-3 py-1.5 text-sm text-pa-text"
           @change="settings.setWorkInterval(Number(($event.target as HTMLSelectElement).value))"
         >
-          <option :value="60">60 min</option>
-          <option :value="90">90 min</option>
-          <option :value="120">120 min (Recomendado)</option>
+          <option :value="60">1 h</option>
+          <option :value="120">2 h (Recomendado)</option>
+          <option :value="180">3 h</option>
+          <option :value="240">4 h</option>
+          <option :value="300">5 h</option>
         </select>
       </div>
 
