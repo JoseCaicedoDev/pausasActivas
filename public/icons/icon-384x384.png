@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="384" height="384" viewBox="0 0 384 384">
+  <rect width="384" height="384" fill="#1e293b" rx="57.599999999999994"/>
+  <circle cx="192" cy="192" r="134.39999999999998" fill="none" stroke="#38bdf8" stroke-width="15.36"/>
+  <circle cx="192" cy="185.28" r="40.31999999999999" fill="#38bdf8"/>
+  <path d="M124.80000000000001 218.88 L192 286.08 L259.2 218.88" fill="none" stroke="#4ade80" stroke-width="11.52" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="192" y="212.16" text-anchor="middle" font-family="Arial" font-size="30.72" fill="#38bdf8" font-weight="bold">PA</text>
+</svg>

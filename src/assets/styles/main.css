@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-pa-bg text-pa-text font-sans antialiased;
+  }
+
+  /* Pastel theme overrides */
+  body.pastel {
+    @apply bg-pa-pastel-bg text-pa-pastel-text;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 bg-pa-accent text-pa-bg font-semibold rounded-xl
+           hover:bg-sky-300 active:bg-sky-500 transition-colors
+           focus:outline-none focus:ring-2 focus:ring-pa-accent focus:ring-offset-2 focus:ring-offset-pa-bg;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 bg-pa-surface text-pa-text font-medium rounded-xl border border-pa-surface-hover
+           hover:bg-pa-surface-hover transition-colors
+           focus:outline-none focus:ring-2 focus:ring-pa-accent focus:ring-offset-2 focus:ring-offset-pa-bg;
+  }
+
+  .card {
+    @apply bg-pa-surface rounded-2xl p-6 border border-pa-surface-hover/50;
+  }
+
+  .pastel .btn-primary {
+    @apply bg-pa-pastel-accent text-white hover:opacity-90;
+  }
+
+  .pastel .btn-secondary {
+    @apply bg-pa-pastel-surface text-pa-pastel-text border-pa-pastel-accent/30;
+  }
+
+  .pastel .card {
+    @apply bg-pa-pastel-surface border-pa-pastel-accent/20;
+  }
+}
