@@ -1,9 +1,10 @@
 from datetime import date, datetime
+from uuid import UUID
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class AuthUserOut(BaseModel):
-    id: str
+    id: UUID
     email: EmailStr
     email_verified: bool
     is_active: bool

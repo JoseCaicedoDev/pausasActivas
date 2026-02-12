@@ -32,6 +32,8 @@ jobs:
         run: npm ci
 
       - name: Build
+        env:
+          VITE_API_BASE_URL: https://pausas.gira360.com
         run: npm run build
 
       - name: Upload Pages artifact

@@ -1,24 +1,45 @@
 services:
   api:
     build: .
-    container_name: pausas-api
-    ports:
-      - "8000:8000"
+    container_name: pausas_backend
+    restart: unless-stopped
     env_file:
       - .env
-    depends_on:
-      - db
-  db:
-    image: postgres:16
-    container_name: pausas-db
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: pausas_activas
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+    expose:
+      - "8000"
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    networks:
+      - n8n_net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=n8n_net
 
-volumes:
-  postgres_data:
+      - traefik.http.routers.pausas-https.rule=Host(`pausas.gira360.com`)
+      - traefik.http.routers.pausas-https.entrypoints=websecure
+      - traefik.http.routers.pausas-https.tls=true
+      - traefik.http.routers.pausas-https.tls.certresolver=le
+      - traefik.http.routers.pausas-https.service=pausas-svc
+      - traefik.http.routers.pausas-https.middlewares=pausas-headers
+
+      - traefik.http.routers.pausas-http.rule=Host(`pausas.gira360.com`)
+      - traefik.http.routers.pausas-http.entrypoints=web
+      - traefik.http.routers.pausas-http.service=pausas-svc
+      - traefik.http.routers.pausas-http.middlewares=pausas-https-redirect
+
+      - traefik.http.services.pausas-svc.loadbalancer.server.port=8000
+      - traefik.http.services.pausas-svc.loadbalancer.server.scheme=http
+
+      - traefik.http.middlewares.pausas-headers.headers.customrequestheaders.X-Forwarded-Proto=https
+      - traefik.http.middlewares.pausas-headers.headers.customrequestheaders.X-Forwarded-Host=pausas.gira360.com
+      - traefik.http.middlewares.pausas-headers.headers.customrequestheaders.X-Forwarded-Port=443
+
+      - traefik.http.middlewares.pausas-https-redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.pausas-https-redirect.redirectscheme.permanent=true
+
+networks:
+  n8n_net:
+    external: true
