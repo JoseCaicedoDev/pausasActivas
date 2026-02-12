@@ -1,9 +1,8 @@
 import { defineStore } from 'pinia'
-import { ref, watch, computed } from 'vue'
+import { ref, computed } from 'vue'
 import type { AppSettings, ThemeMode, AlarmType } from '@/types/settings'
 import { DEFAULT_SETTINGS } from '@/types/settings'
-
-const STORAGE_KEY = 'pausas-activas-settings'
+import { apiRequest } from '@/services/apiClient'
 
 export const useSettingsStore = defineStore('settings', () => {
   const settings = ref<AppSettings>({ ...DEFAULT_SETTINGS })
@@ -15,57 +14,75 @@ export const useSettingsStore = defineStore('settings', () => {
     const interval = settings.value.workIntervalMinutes / 60
     return Math.floor(hours / interval)
   })
+  const isLoaded = ref(false)
 
-  function loadSettings(): void {
-    const saved = localStorage.getItem(STORAGE_KEY)
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved) as Partial<AppSettings>
-        settings.value = { ...DEFAULT_SETTINGS, ...parsed }
-      } catch {
-        settings.value = { ...DEFAULT_SETTINGS }
-      }
+  async function loadSettings(): Promise<void> {
+    try {
+      const remote = await apiRequest<Partial<AppSettings>>('/settings/me', { method: 'GET' })
+      settings.value = { ...DEFAULT_SETTINGS, ...remote }
+    } catch {
+      settings.value = { ...DEFAULT_SETTINGS }
+    } finally {
+      applyTheme(settings.value.theme)
+      isLoaded.value = true
     }
   }
 
-  function acceptDisclaimer(): void {
+  async function persistSettings(): Promise<void> {
+    if (!isLoaded.value) return
+    await apiRequest('/settings/me', {
+      method: 'PUT',
+      body: JSON.stringify(settings.value),
+    })
+  }
+
+  async function acceptDisclaimer(): Promise<void> {
     settings.value.disclaimerAccepted = true
     settings.value.disclaimerAcceptedAt = new Date().toISOString()
+    await persistSettings()
   }
 
-  function setTheme(mode: ThemeMode): void {
+  async function setTheme(mode: ThemeMode): Promise<void> {
     settings.value.theme = mode
+    applyTheme(mode)
+    await persistSettings()
   }
 
-  function setAlarmVolume(volume: number): void {
+  async function setAlarmVolume(volume: number): Promise<void> {
     settings.value.alarmVolume = Math.max(0, Math.min(1, volume))
+    await persistSettings()
   }
 
-  function setAlarmType(type: AlarmType): void {
+  async function setAlarmType(type: AlarmType): Promise<void> {
     settings.value.alarmType = type
+    await persistSettings()
   }
 
-  function setWorkInterval(minutes: number): void {
+  async function setWorkInterval(minutes: number): Promise<void> {
     settings.value.workIntervalMinutes = minutes
+    await persistSettings()
   }
 
-  function setBreakDuration(minutes: number): void {
+  async function setBreakDuration(minutes: number): Promise<void> {
     settings.value.breakDurationMinutes = minutes
+    await persistSettings()
   }
 
-  function setWorkHours(start: number, end: number): void {
+  async function setWorkHours(start: number, end: number): Promise<void> {
     settings.value.workStartHour = start
     settings.value.workEndHour = end
+    await persistSettings()
   }
 
-  function setNotificationsEnabled(enabled: boolean): void {
+  async function setNotificationsEnabled(enabled: boolean): Promise<void> {
     settings.value.notificationsEnabled = enabled
+    await persistSettings()
   }
 
-  watch(settings, (val) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(val))
-    applyTheme(val.theme)
-  }, { deep: true })
+  async function setAutoStartNextCycle(enabled: boolean): Promise<void> {
+    settings.value.autoStartNextCycle = enabled
+    await persistSettings()
+  }
 
   function applyTheme(mode: ThemeMode): void {
     if (mode === 'pastel') {
@@ -77,12 +94,18 @@ export const useSettingsStore = defineStore('settings', () => {
     }
   }
 
-  loadSettings()
+  function resetLocalState(): void {
+    settings.value = { ...DEFAULT_SETTINGS }
+    isLoaded.value = false
+    applyTheme(settings.value.theme)
+  }
+
   applyTheme(settings.value.theme)
 
   return {
     settings,
     theme,
+    isLoaded,
     disclaimerAccepted,
     expectedBreaksPerDay,
     loadSettings,
@@ -94,5 +117,7 @@ export const useSettingsStore = defineStore('settings', () => {
     setBreakDuration,
     setWorkHours,
     setNotificationsEnabled,
+    setAutoStartNextCycle,
+    resetLocalState,
   }
 })

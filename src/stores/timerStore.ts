@@ -4,9 +4,14 @@ import type { TimerMode } from '@/types/timer'
 import { useSettingsStore } from './settingsStore'
 import { useExerciseStore } from './exerciseStore'
 import { useHistoryStore } from './historyStore'
+import { useAuthStore } from './authStore'
 import { alarmSound } from '@/services/audioService'
 
-const TIMER_STATE_KEY = 'pausas-activas-timer-state'
+function timerStorageKey(): string {
+  const auth = useAuthStore()
+  const userId = auth.user?.id ?? 'anonymous'
+  return `pausas-activas:${userId}:timer-state`
+}
 
 interface PersistedTimerState {
   mode: TimerMode
@@ -65,11 +70,11 @@ export const useTimerStore = defineStore('timer', () => {
       currentCycleNumber: currentCycleNumber.value,
       breakSecondsRemaining: breakSecondsRemaining.value,
     }
-    localStorage.setItem(TIMER_STATE_KEY, JSON.stringify(state))
+    localStorage.setItem(timerStorageKey(), JSON.stringify(state))
   }
 
   function restoreState(): void {
-    const saved = localStorage.getItem(TIMER_STATE_KEY)
+    const saved = localStorage.getItem(timerStorageKey())
     if (!saved) return
 
     try {
@@ -262,7 +267,7 @@ export const useTimerStore = defineStore('timer', () => {
     currentCycleNumber.value = 0
     cycleStartedAt.value = null
     currentSessionId.value = null
-    localStorage.removeItem(TIMER_STATE_KEY)
+    localStorage.removeItem(timerStorageKey())
   }
 
   // Visibility change handler: recalculate on tab return

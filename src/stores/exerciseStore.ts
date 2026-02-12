@@ -2,10 +2,16 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { Exercise, ExerciseCategory } from '@/types/exercise'
 import { exercises as allExercisesData } from '@/services/exerciseData'
+import { useAuthStore } from './authStore'
 
-const RECENT_KEY = 'pausas-activas-recent-exercises'
 const HISTORY_SIZE = 8
 const CATEGORIES: ExerciseCategory[] = ['visual', 'cuello_hombros', 'manos_munecas', 'espalda']
+
+function recentStorageKey(): string {
+  const auth = useAuthStore()
+  const userId = auth.user?.id ?? 'anonymous'
+  return `pausas-activas:${userId}:recent-exercises`
+}
 
 export const useExerciseStore = defineStore('exercise', () => {
   const allExercises = ref<Exercise[]>(allExercisesData)
@@ -22,7 +28,7 @@ export const useExerciseStore = defineStore('exercise', () => {
   )
 
   function loadRecent(): void {
-    const saved = localStorage.getItem(RECENT_KEY)
+    const saved = localStorage.getItem(recentStorageKey())
     if (saved) {
       try {
         recentExerciseIds.value = JSON.parse(saved)
@@ -33,7 +39,7 @@ export const useExerciseStore = defineStore('exercise', () => {
   }
 
   function saveRecent(): void {
-    localStorage.setItem(RECENT_KEY, JSON.stringify(recentExerciseIds.value))
+    localStorage.setItem(recentStorageKey(), JSON.stringify(recentExerciseIds.value))
   }
 
   function selectExercisesForBreak(count: number = 4): Exercise[] {

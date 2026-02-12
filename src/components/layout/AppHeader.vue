@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useTimerStore } from '@/stores/timerStore'
+import { useAuthStore } from '@/stores/authStore'
 
 const timer = useTimerStore()
+const auth = useAuthStore()
 </script>
 
 <template>
@@ -11,9 +13,14 @@ const timer = useTimerStore()
         <span class="text-xl">🧘</span>
         <h1 class="font-bold text-lg text-white">Pausas Activas</h1>
       </div>
-      <div v-if="timer.isWorking || timer.isPaused" class="flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full" :class="timer.isWorking ? 'bg-pa-success animate-pulse' : 'bg-pa-warning'" />
-        <span class="text-sm font-mono text-pa-text-muted">{{ timer.workTimeFormatted }}</span>
+      <div class="flex items-center gap-3">
+        <div v-if="timer.isWorking || timer.isPaused" class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full" :class="timer.isWorking ? 'bg-pa-success animate-pulse' : 'bg-pa-warning'" />
+          <span class="text-sm font-mono text-pa-text-muted">{{ timer.workTimeFormatted }}</span>
+        </div>
+        <button class="text-xs text-pa-text-muted hover:text-pa-text" @click="auth.logout">
+          Salir
+        </button>
       </div>
     </div>
   </header>

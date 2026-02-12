@@ -10,9 +10,9 @@ const { playChime } = useAlarmSound()
 async function toggleNotifications() {
   if (!settings.settings.notificationsEnabled) {
     const granted = await requestPermission()
-    settings.setNotificationsEnabled(granted)
+    await settings.setNotificationsEnabled(granted)
   } else {
-    settings.setNotificationsEnabled(false)
+    await settings.setNotificationsEnabled(false)
   }
 }
 
@@ -137,18 +137,18 @@ function testAlarm() {
     <div class="card space-y-3">
       <h3 class="font-semibold text-sm text-pa-text-muted uppercase tracking-wider">Notificaciones</h3>
 
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between gap-3">
         <label class="text-sm">Notificaciones push</label>
         <button
           :class="[
-            'relative w-12 h-6 rounded-full transition-colors',
+            'relative w-12 h-6 rounded-full transition-colors shrink-0',
             settings.settings.notificationsEnabled ? 'bg-pa-accent' : 'bg-pa-surface-hover'
           ]"
           @click="toggleNotifications"
         >
           <span
             :class="[
-              'absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform shadow',
+              'absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full transition-transform shadow',
               settings.settings.notificationsEnabled ? 'translate-x-6' : 'translate-x-0.5'
             ]"
           />
@@ -158,21 +158,21 @@ function testAlarm() {
 
     <!-- Auto restart -->
     <div class="card space-y-3">
-      <div class="flex items-center justify-between">
-        <div>
+      <div class="flex items-center justify-between gap-3">
+        <div class="min-w-0">
           <label class="text-sm font-medium">Auto-reiniciar ciclo</label>
           <p class="text-xs text-pa-text-muted">Iniciar siguiente ciclo de trabajo automaticamente</p>
         </div>
         <button
           :class="[
-            'relative w-12 h-6 rounded-full transition-colors',
+            'relative w-12 h-6 rounded-full transition-colors shrink-0',
             settings.settings.autoStartNextCycle ? 'bg-pa-accent' : 'bg-pa-surface-hover'
           ]"
-          @click="settings.settings.autoStartNextCycle = !settings.settings.autoStartNextCycle"
+          @click="settings.setAutoStartNextCycle(!settings.settings.autoStartNextCycle)"
         >
           <span
             :class="[
-              'absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform shadow',
+              'absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full transition-transform shadow',
               settings.settings.autoStartNextCycle ? 'translate-x-6' : 'translate-x-0.5'
             ]"
           />

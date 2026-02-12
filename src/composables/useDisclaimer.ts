@@ -8,7 +8,7 @@ export function useDisclaimer() {
   const isAccepted = computed(() => settingsStore.disclaimerAccepted)
 
   async function accept(): Promise<void> {
-    settingsStore.acceptDisclaimer()
+    await settingsStore.acceptDisclaimer()
     await alarmSound.resume()
   }
 

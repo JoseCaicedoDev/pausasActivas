@@ -1,14 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { BreakSession, DailyRecord, ComplianceStats } from '@/types/session'
-import { saveSession, getSessionsByDate, getDailyRecords } from '@/services/db'
+import { createSession, completeSessionById, getSessionsByDate, getDailyRecords } from '@/services/db'
 
 function todayStr(): string {
   return new Date().toISOString().split('T')[0]!
-}
-
-function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 }
 
 export const useHistoryStore = defineStore('history', () => {
@@ -57,17 +53,12 @@ export const useHistoryStore = defineStore('history', () => {
   }
 
   async function startSession(exerciseIds: string[], plannedDuration: number): Promise<string> {
-    const session: BreakSession = {
-      id: generateId(),
+    const session = await createSession({
       date: todayStr(),
       startedAt: new Date().toISOString(),
-      completedAt: null,
-      completed: false,
       exerciseIds,
       durationPlannedSeconds: plannedDuration,
-      durationActualSeconds: 0,
-    }
-    await saveSession(session)
+    })
     todaySessions.value = [...todaySessions.value, session]
     return session.id
   }
@@ -75,10 +66,11 @@ export const useHistoryStore = defineStore('history', () => {
   async function completeSession(sessionId: string, actualDuration: number): Promise<void> {
     const session = todaySessions.value.find(s => s.id === sessionId)
     if (session) {
-      session.completed = true
-      session.completedAt = new Date().toISOString()
-      session.durationActualSeconds = actualDuration
-      await saveSession(session)
+      const updated = await completeSessionById(sessionId, {
+        completedAt: new Date().toISOString(),
+        durationActualSeconds: actualDuration,
+      })
+      Object.assign(session, updated)
       todaySessions.value = [...todaySessions.value]
     }
   }
@@ -116,6 +108,12 @@ export const useHistoryStore = defineStore('history', () => {
     return { totalDays, averageCompliance: avgCompliance, currentStreak, bestStreak }
   }
 
+  function clearState(): void {
+    todaySessions.value = []
+    weeklyRecords.value = []
+    isLoading.value = false
+  }
+
   return {
     todaySessions,
     weeklyRecords,
@@ -129,5 +127,6 @@ export const useHistoryStore = defineStore('history', () => {
     startSession,
     completeSession,
     getComplianceStats,
+    clearState,
   }
 })

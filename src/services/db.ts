@@ -1,92 +1,51 @@
-import { openDB, type DBSchema, type IDBPDatabase } from 'idb'
+import { apiRequest } from './apiClient'
 import type { BreakSession, DailyRecord } from '@/types/session'
 
-interface PausasActivasDB extends DBSchema {
-  'break-sessions': {
-    key: string
-    value: BreakSession
-    indexes: {
-      'by-date': string
-    }
-  }
-  'daily-records': {
-    key: string
-    value: DailyRecord
-  }
+interface SessionCreatePayload {
+  date: string
+  startedAt: string
+  exerciseIds: string[]
+  durationPlannedSeconds: number
 }
 
-let dbInstance: IDBPDatabase<PausasActivasDB> | null = null
+interface SessionCompletePayload {
+  completedAt: string
+  durationActualSeconds: number
+}
 
-export async function getDB(): Promise<IDBPDatabase<PausasActivasDB>> {
-  if (dbInstance) return dbInstance
-  dbInstance = await openDB<PausasActivasDB>('pausas-activas-db', 1, {
-    upgrade(db) {
-      const sessionStore = db.createObjectStore('break-sessions', { keyPath: 'id' })
-      sessionStore.createIndex('by-date', 'date')
-      db.createObjectStore('daily-records', { keyPath: 'date' })
-    },
+export async function createSession(payload: SessionCreatePayload): Promise<BreakSession> {
+  return apiRequest<BreakSession>('/history/sessions', {
+    method: 'POST',
+    body: JSON.stringify(payload),
   })
-  return dbInstance
 }
 
-export async function saveSession(session: BreakSession): Promise<void> {
-  const db = await getDB()
-  await db.put('break-sessions', session)
-  await updateDailyRecord(db, session.date)
+export async function completeSessionById(
+  sessionId: string,
+  payload: SessionCompletePayload,
+): Promise<BreakSession> {
+  return apiRequest<BreakSession>(`/history/sessions/${sessionId}/complete`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
 }
 
 export async function getSessionsByDate(date: string): Promise<BreakSession[]> {
-  const db = await getDB()
-  return db.getAllFromIndex('break-sessions', 'by-date', date)
+  return apiRequest<BreakSession[]>(`/history/sessions?from=${date}&to=${date}`, { method: 'GET' })
 }
 
 export async function getDailyRecord(date: string): Promise<DailyRecord | undefined> {
-  const db = await getDB()
-  return db.get('daily-records', date)
+  const records = await apiRequest<DailyRecord[]>(`/history/daily-records?from=${date}&to=${date}`, { method: 'GET' })
+  return records[0]
 }
 
 export async function getDailyRecords(from: string, to: string): Promise<DailyRecord[]> {
-  const db = await getDB()
-  const range = IDBKeyRange.bound(from, to)
-  return db.getAll('daily-records', range)
-}
-
-async function updateDailyRecord(db: IDBPDatabase<PausasActivasDB>, date: string): Promise<void> {
-  const sessions = await db.getAllFromIndex('break-sessions', 'by-date', date)
-  const started = sessions.length
-  const completed = sessions.filter(s => s.completed).length
-
-  const existing = await db.get('daily-records', date)
-  const expected = existing?.sessionsExpected ?? 4
-
-  const record: DailyRecord = {
-    date,
-    sessionsExpected: expected,
-    sessionsStarted: started,
-    sessionsCompleted: completed,
-    compliancePercent: expected > 0 ? Math.round((completed / expected) * 100) : 0,
-    sessions,
-  }
-  await db.put('daily-records', record)
+  return apiRequest<DailyRecord[]>(`/history/daily-records?from=${from}&to=${to}`, { method: 'GET' })
 }
 
 export async function setExpectedSessions(date: string, expected: number): Promise<void> {
-  const db = await getDB()
-  const existing = await db.get('daily-records', date)
-  if (existing) {
-    existing.sessionsExpected = expected
-    existing.compliancePercent = expected > 0
-      ? Math.round((existing.sessionsCompleted / expected) * 100)
-      : 0
-    await db.put('daily-records', existing)
-  } else {
-    await db.put('daily-records', {
-      date,
-      sessionsExpected: expected,
-      sessionsStarted: 0,
-      sessionsCompleted: 0,
-      compliancePercent: 0,
-      sessions: [],
-    })
-  }
+  await apiRequest<void>(`/history/daily-records/${date}/expected`, {
+    method: 'PUT',
+    body: JSON.stringify({ sessionsExpected: expected }),
+  })
 }

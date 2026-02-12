@@ -20,6 +20,10 @@ Aplicacion web de pausas activas laborales (Vue 3 + Vite + PWA), desplegada en G
 - `npm run build`
 - `npm run preview`
 
+## Variables de entorno frontend
+
+- `VITE_API_BASE_URL`: URL base del backend FastAPI, por ejemplo `https://api.tudominio.com`.
+
 ## Checklist post-deploy
 
 1. Abrir la URL de produccion y confirmar carga inicial.
@@ -45,3 +49,9 @@ Aplicacion web de pausas activas laborales (Vue 3 + Vite + PWA), desplegada en G
 - La app usa base path de produccion `/pausasActivas/`.
 - El router usa `import.meta.env.BASE_URL` para compatibilidad en subruta.
 - El build genera `dist/404.html` como fallback SPA para refresh en rutas internas.
+- El frontend requiere backend de autenticacion y datos multiusuario.
+
+## Backend API
+
+- Implementacion en `backend/` con FastAPI + PostgreSQL + JWT/refresh cookie.
+- Revisar `backend/README.md` y `backend/.env.example` para levantar el servicio.
