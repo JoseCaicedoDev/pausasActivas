@@ -77,7 +77,7 @@ export const useAuthStore = defineStore('auth', () => {
       useSettingsStore().resetLocalState()
       clearSession()
       if (typeof window !== 'undefined') {
-        window.location.href = `${import.meta.env.BASE_URL}login`
+        window.location.href = import.meta.env.BASE_URL
       }
     }
   }
