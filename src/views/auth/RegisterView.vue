@@ -27,7 +27,7 @@ async function submit() {
   isLoading.value = true
   try {
     await auth.register({ email: email.value, password: password.value })
-    await router.push('/')
+    await router.push('/panel')
   } catch (error) {
     if (error instanceof ApiError) {
       errorMessage.value = error.message

@@ -18,7 +18,7 @@ async function submit() {
   errorMessage.value = ''
   try {
     await auth.login({ email: email.value, password: password.value })
-    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
+    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/panel'
     await router.push(redirect)
   } catch (error) {
     if (error instanceof ApiError) {

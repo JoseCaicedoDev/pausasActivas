@@ -3,6 +3,12 @@ import { useAuthStore } from '@/stores/authStore'
 
 const routes = [
   {
+    path: '/',
+    name: 'landing',
+    component: () => import('@/views/PublicLandingView.vue'),
+    meta: { title: 'Inicio' },
+  },
+  {
     path: '/login',
     name: 'login',
     component: () => import('@/views/auth/LoginView.vue'),
@@ -27,7 +33,7 @@ const routes = [
     meta: { title: 'Restablecer Contrasena', publicOnly: true },
   },
   {
-    path: '/',
+    path: '/panel',
     name: 'dashboard',
     component: () => import('@/views/DashboardView.vue'),
     meta: { title: 'Panel Principal', requiresAuth: true },
@@ -71,6 +77,10 @@ router.beforeEach(async (to) => {
       name: 'login',
       query: { redirect: to.fullPath },
     }
+  }
+
+  if (to.name === 'landing' && auth.isAuthenticated) {
+    return { name: 'dashboard' }
   }
 
   if (to.meta.publicOnly && auth.isAuthenticated) {

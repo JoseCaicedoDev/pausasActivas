@@ -5,7 +5,7 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 
 const tabs = [
-  { name: 'dashboard', path: '/', icon: '⏱️', label: 'Inicio' },
+  { name: 'dashboard', path: '/panel', icon: '⏱️', label: 'Inicio' },
   { name: 'history', path: '/historial', icon: '📊', label: 'Historial' },
   { name: 'settings', path: '/ajustes', icon: '⚙️', label: 'Ajustes' },
   { name: 'about', path: '/acerca-de', icon: 'ℹ️', label: 'Info' },
