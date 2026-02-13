@@ -1,25 +1,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { useDisclaimer } from '@/composables/useDisclaimer'
-import { useNotification } from '@/composables/useNotification'
 import { useAuthStore } from '@/stores/authStore'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import NavigationBar from '@/components/layout/NavigationBar.vue'
 import BreakModal from '@/components/break/BreakModal.vue'
-import DisclaimerModal from '@/components/common/DisclaimerModal.vue'
 import NotificationBanner from '@/components/common/NotificationBanner.vue'
 
 const route = useRoute()
 const auth = useAuthStore()
-const { isAccepted, accept } = useDisclaimer()
-const { requestPermission } = useNotification()
 const isAuthRoute = computed(() => Boolean(route.meta.publicOnly))
-
-async function onDisclaimerAccepted() {
-  await accept()
-  await requestPermission()
-}
 </script>
 
 <template>
@@ -28,8 +18,6 @@ async function onDisclaimerAccepted() {
   </div>
 
   <RouterView v-else-if="!auth.isAuthenticated || isAuthRoute" />
-
-  <DisclaimerModal v-else-if="!isAccepted" @accepted="onDisclaimerAccepted" />
 
   <div v-else class="min-h-screen pb-16">
     <AppHeader />
