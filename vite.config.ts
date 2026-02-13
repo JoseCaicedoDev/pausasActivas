@@ -25,7 +25,8 @@ export default defineConfig(({ mode }) => {
         manifest: {
           name: 'Pausas Activas - SST Colombia',
           short_name: 'Pausas Activas',
-          description: 'Aplicacion de pausas activas laborales segun Resolucion 1843 de 2025',
+          description:
+            'Pausas activas laborales para reducir fatiga, mejorar bienestar y apoyar cumplimiento SST en Colombia.',
           theme_color: '#1e293b',
           background_color: '#0f172a',
           display: 'standalone',
