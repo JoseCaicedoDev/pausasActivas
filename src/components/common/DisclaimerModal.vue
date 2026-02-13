@@ -12,8 +12,8 @@ function handleAccept() {
 </script>
 
 <template>
-  <div class="fixed inset-0 z-[99998] bg-pa-bg flex items-center justify-center p-4">
-    <div class="max-w-lg w-full card space-y-6">
+  <div class="fixed inset-0 z-[99998] bg-pa-bg flex flex-col sm:items-center sm:justify-center p-4">
+    <div class="max-w-lg w-full card space-y-6 max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-y-auto">
       <div class="text-center">
         <div class="text-4xl mb-3">🏥</div>
         <h1 class="text-2xl font-bold text-pa-accent">Pausas Activas</h1>
@@ -49,6 +49,7 @@ function handleAccept() {
         <input
           v-model="checked"
           type="checkbox"
+          aria-label="Aceptar aviso medico y uso bajo responsabilidad"
           class="mt-1 w-4 h-4 rounded border-pa-surface-hover text-pa-accent focus:ring-pa-accent bg-pa-bg"
         />
         <span class="text-sm">
@@ -59,6 +60,7 @@ function handleAccept() {
 
       <button
         :disabled="!checked"
+        aria-label="Aceptar aviso medico y continuar"
         class="btn-primary w-full disabled:opacity-40 disabled:cursor-not-allowed"
         @click="handleAccept"
       >
