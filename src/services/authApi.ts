@@ -1,42 +1,14 @@
 import type { AuthResponse, AuthUser, LoginPayload, RegisterPayload } from '@/types/auth'
 import { apiRequest } from './apiClient'
-
-interface RawAuthUser {
-  id: string
-  email: string
-  email_verified: boolean
-  is_active: boolean
-  created_at: string
-}
-
-interface RawAuthResponse {
-  access_token: string
-  user: RawAuthUser
-}
-
-function mapUser(raw: RawAuthUser): AuthUser {
-  return {
-    id: raw.id,
-    email: raw.email,
-    emailVerified: raw.email_verified,
-    isActive: raw.is_active,
-    createdAt: raw.created_at,
-  }
-}
-
-function mapAuth(raw: RawAuthResponse): AuthResponse {
-  return {
-    accessToken: raw.access_token,
-    user: mapUser(raw.user),
-  }
-}
+import type { RawAuthResponse, RawAuthUser } from '@/services/contracts/auth'
+import { mapAuthResponse, mapAuthUser } from '@/services/mappers/authMapper'
 
 export async function register(payload: RegisterPayload): Promise<AuthResponse> {
   const response = await apiRequest<RawAuthResponse>('/auth/register', {
     method: 'POST',
     body: JSON.stringify(payload),
   }, false)
-  return mapAuth(response)
+  return mapAuthResponse(response)
 }
 
 export async function login(payload: LoginPayload): Promise<AuthResponse> {
@@ -44,7 +16,7 @@ export async function login(payload: LoginPayload): Promise<AuthResponse> {
     method: 'POST',
     body: JSON.stringify(payload),
   }, false)
-  return mapAuth(response)
+  return mapAuthResponse(response)
 }
 
 export async function logout(): Promise<void> {
@@ -53,12 +25,12 @@ export async function logout(): Promise<void> {
 
 export async function refresh(): Promise<AuthResponse> {
   const response = await apiRequest<RawAuthResponse>('/auth/refresh', { method: 'POST' }, false)
-  return mapAuth(response)
+  return mapAuthResponse(response)
 }
 
 export async function me(): Promise<AuthUser> {
   const response = await apiRequest<RawAuthUser>('/auth/me', { method: 'GET' })
-  return mapUser(response)
+  return mapAuthUser(response)
 }
 
 export async function forgotPassword(email: string): Promise<void> {

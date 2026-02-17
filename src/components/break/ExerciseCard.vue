@@ -19,27 +19,27 @@ const categoryColor = computed(() => {
 
 const illustrationSvg = computed(() => {
   const svgs: Record<string, string> = {
-    'visual': `<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full">
+    visual: `<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full">
       <circle cx="60" cy="60" r="25" /><circle cx="60" cy="60" r="10" fill="currentColor" />
       <path d="M10 60 Q35 30 60 35 Q85 30 110 60 Q85 90 60 85 Q35 90 10 60Z" />
       <line x1="45" y1="45" x2="75" y2="75" stroke-dasharray="4 2" />
       <line x1="75" y1="45" x2="45" y2="75" stroke-dasharray="4 2" />
     </svg>`,
-    'cuello_hombros': `<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full">
+    cuello_hombros: `<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full">
       <circle cx="60" cy="30" r="15" /><line x1="60" y1="45" x2="60" y2="85" />
       <line x1="60" y1="55" x2="35" y2="70" /><line x1="60" y1="55" x2="85" y2="70" />
       <line x1="60" y1="85" x2="40" y2="110" /><line x1="60" y1="85" x2="80" y2="110" />
       <path d="M45 25 Q60 10 75 25" stroke-dasharray="3 2" />
       <path d="M30 35 Q25 30 30 25" /><path d="M90 35 Q95 30 90 25" />
     </svg>`,
-    'manos_munecas': `<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full">
+    manos_munecas: `<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full">
       <path d="M40 90 L40 50 Q40 40 50 40 L70 40 Q80 40 80 50 L80 90" />
       <line x1="50" y1="40" x2="50" y2="20" /><line x1="57" y1="40" x2="57" y2="15" />
       <line x1="64" y1="40" x2="64" y2="15" /><line x1="71" y1="40" x2="71" y2="20" />
       <line x1="40" y1="60" x2="25" y2="55" />
       <ellipse cx="60" cy="90" rx="22" ry="8" />
     </svg>`,
-    'espalda': `<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full">
+    espalda: `<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full">
       <circle cx="60" cy="25" r="12" />
       <path d="M60 37 Q55 55 50 70 Q48 80 55 85" />
       <path d="M55 85 L45 110" /><path d="M55 85 L70 110" />
@@ -47,25 +47,22 @@ const illustrationSvg = computed(() => {
       <path d="M25 70 L90 70 L90 95 L25 95 Z" stroke-dasharray="4 2" opacity="0.3" />
     </svg>`,
   }
-  return svgs[props.exercise.category] || svgs['visual']
+  return svgs[props.exercise.category] || svgs.visual
 })
 </script>
 
 <template>
   <div class="animate-slide-in">
-    <!-- Category badge -->
     <div class="flex items-center justify-center mb-4">
       <span :class="['text-xs font-medium px-3 py-1 rounded-full border', categoryColor]">
         {{ categoryLabel }}
       </span>
     </div>
 
-    <!-- Illustration -->
     <div class="flex justify-center mb-6">
       <div class="w-28 h-28 text-pa-accent opacity-80" v-html="illustrationSvg" />
     </div>
 
-    <!-- Exercise name -->
     <h3 class="text-xl font-bold text-center text-white mb-2">
       {{ exercise.name }}
     </h3>
@@ -73,7 +70,6 @@ const illustrationSvg = computed(() => {
       {{ exercise.description }}
     </p>
 
-    <!-- Steps -->
     <div class="space-y-3 max-w-md mx-auto">
       <div
         v-for="(step, i) in exercise.steps"
@@ -87,7 +83,7 @@ const illustrationSvg = computed(() => {
           <p class="text-sm text-pa-text leading-relaxed">{{ step.instruction }}</p>
           <p class="text-xs text-pa-text-muted mt-0.5">
             {{ step.durationSeconds }}s
-            <span v-if="step.repetitions"> · {{ step.repetitions }} repeticiones</span>
+            <span v-if="step.repetitions"> - {{ step.repetitions }} repeticiones</span>
           </p>
         </div>
       </div>

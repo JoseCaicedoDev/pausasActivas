@@ -5,7 +5,7 @@
   <div class="min-h-screen px-6 py-10 sm:px-10">
     <div class="mx-auto flex max-w-5xl flex-col">
       <div class="mb-12 flex items-center gap-3">
-        <span class="text-2xl" aria-hidden="true">PA</span>
+        <span class="text-2xl" aria-hidden="true">&#x1F9D8;</span>
         <h1 class="text-2xl font-bold text-white">Pausas Activas</h1>
       </div>
 

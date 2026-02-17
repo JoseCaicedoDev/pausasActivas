@@ -1,8 +1,12 @@
+import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-import type { AppSettings, ThemeMode, AlarmType } from '@/types/settings'
+import type { AlarmType, AppSettings, ThemeMode } from '@/types/settings'
 import { DEFAULT_SETTINGS } from '@/types/settings'
 import { apiRequest } from '@/services/apiClient'
+import type { RawSettingsResponse } from '@/services/contracts/settings'
+import { mapSettingsResponse } from '@/services/mappers/settingsMapper'
+import type { AppError } from '@/types/errors'
+import { toAppError } from '@/types/errors'
 
 const WORK_INTERVAL_OPTIONS = [60, 120, 180, 240, 300] as const
 
@@ -23,8 +27,21 @@ function normalizeWorkInterval(minutes: number): number {
   return closest
 }
 
+function applyTheme(mode: ThemeMode): void {
+  if (mode === 'pastel') {
+    document.body.classList.add('pastel')
+    document.body.classList.remove('dark')
+    return
+  }
+
+  document.body.classList.add('dark')
+  document.body.classList.remove('pastel')
+}
+
 export const useSettingsStore = defineStore('settings', () => {
   const settings = ref<AppSettings>({ ...DEFAULT_SETTINGS })
+  const isLoaded = ref(false)
+  const lastError = ref<AppError | null>(null)
 
   const theme = computed(() => settings.value.theme)
   const disclaimerAccepted = computed(() => settings.value.disclaimerAccepted)
@@ -33,16 +50,17 @@ export const useSettingsStore = defineStore('settings', () => {
     const interval = settings.value.workIntervalMinutes / 60
     return Math.floor(hours / interval)
   })
-  const isLoaded = ref(false)
 
   async function loadSettings(): Promise<void> {
     try {
-      const remote = await apiRequest<Partial<AppSettings>>('/settings/me', { method: 'GET' })
-      settings.value = { ...DEFAULT_SETTINGS, ...remote }
+      const remote = await apiRequest<RawSettingsResponse>('/settings/me', { method: 'GET' })
+      settings.value = mapSettingsResponse(remote)
       settings.value.workIntervalMinutes = normalizeWorkInterval(settings.value.workIntervalMinutes)
-    } catch {
+      lastError.value = null
+    } catch (error) {
       settings.value = { ...DEFAULT_SETTINGS }
       settings.value.workIntervalMinutes = normalizeWorkInterval(settings.value.workIntervalMinutes)
+      lastError.value = toAppError('settings', error, 'No fue posible cargar la configuracion', 'settings_load_failed')
     } finally {
       applyTheme(settings.value.theme)
       isLoaded.value = true
@@ -51,10 +69,17 @@ export const useSettingsStore = defineStore('settings', () => {
 
   async function persistSettings(): Promise<void> {
     if (!isLoaded.value) return
-    await apiRequest('/settings/me', {
-      method: 'PUT',
-      body: JSON.stringify(settings.value),
-    })
+
+    try {
+      await apiRequest('/settings/me', {
+        method: 'PUT',
+        body: JSON.stringify(settings.value),
+      })
+      lastError.value = null
+    } catch (error) {
+      lastError.value = toAppError('settings', error, 'No fue posible guardar la configuracion', 'settings_save_failed')
+      throw error
+    }
   }
 
   async function acceptDisclaimer(): Promise<void> {
@@ -105,19 +130,10 @@ export const useSettingsStore = defineStore('settings', () => {
     await persistSettings()
   }
 
-  function applyTheme(mode: ThemeMode): void {
-    if (mode === 'pastel') {
-      document.body.classList.add('pastel')
-      document.body.classList.remove('dark')
-    } else {
-      document.body.classList.add('dark')
-      document.body.classList.remove('pastel')
-    }
-  }
-
   function resetLocalState(): void {
     settings.value = { ...DEFAULT_SETTINGS }
     isLoaded.value = false
+    lastError.value = null
     applyTheme(settings.value.theme)
   }
 
@@ -127,6 +143,7 @@ export const useSettingsStore = defineStore('settings', () => {
     settings,
     theme,
     isLoaded,
+    lastError,
     disclaimerAccepted,
     expectedBreaksPerDay,
     loadSettings,

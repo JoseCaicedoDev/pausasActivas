@@ -2,6 +2,7 @@
 import { onMounted } from 'vue'
 import { useTimerStore } from '@/stores/timerStore'
 import { useHistoryStore } from '@/stores/historyStore'
+import { useTimerVisibilitySync } from '@/composables/useTimerVisibilitySync'
 import WorkTimerDisplay from '@/components/timer/WorkTimerDisplay.vue'
 import TimerControls from '@/components/timer/TimerControls.vue'
 import ComplianceSummary from '@/components/history/ComplianceSummary.vue'
@@ -11,7 +12,11 @@ const history = useHistoryStore()
 
 onMounted(() => {
   timer.restoreState()
-  history.loadToday()
+  void history.loadToday()
+})
+
+useTimerVisibilitySync(() => {
+  timer.recalculateAfterTabVisible()
 })
 </script>
 

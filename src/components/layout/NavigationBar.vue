@@ -5,10 +5,10 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 
 const tabs = [
-  { name: 'dashboard', path: '/panel', icon: '⏱️', label: 'Inicio' },
-  { name: 'history', path: '/historial', icon: '📊', label: 'Historial' },
-  { name: 'settings', path: '/ajustes', icon: '⚙️', label: 'Ajustes' },
-  { name: 'about', path: '/acerca-de', icon: 'ℹ️', label: 'Info' },
+  { name: 'dashboard', path: '/panel', icon: '\u23f1', label: 'Inicio' },
+  { name: 'history', path: '/historial', icon: '\ud83d\udcca', label: 'Historial' },
+  { name: 'settings', path: '/ajustes', icon: '\u2699', label: 'Ajustes' },
+  { name: 'about', path: '/acerca-de', icon: '\u2139', label: 'Info' },
 ]
 
 const currentRoute = computed(() => route.name)

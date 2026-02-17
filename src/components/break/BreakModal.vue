@@ -18,8 +18,9 @@ function getFocusableElements(container: HTMLElement): HTMLElement[] {
     'input:not([disabled])',
     'select:not([disabled])',
     'textarea:not([disabled])',
-    '[tabindex]:not([tabindex="-1"])'
+    '[tabindex]:not([tabindex="-1"])',
   ].join(',')
+
   return Array.from(container.querySelectorAll<HTMLElement>(selector))
 }
 
@@ -38,6 +39,7 @@ function trapTab(event: KeyboardEvent) {
 
   const first = focusable[0]
   const last = focusable[focusable.length - 1]
+  if (!first || !last) return
   const active = document.activeElement as HTMLElement | null
 
   if (event.shiftKey && active === first) {
@@ -49,23 +51,30 @@ function trapTab(event: KeyboardEvent) {
   }
 }
 
-watch(() => timer.isOnBreak, async (isBreak) => {
-  if (isBreak) {
-    previouslyFocusedElement = document.activeElement as HTMLElement | null
-    await enterFullscreen()
-    await nextTick()
-    modalRef.value?.focus()
-  } else {
+watch(
+  () => timer.isOnBreak,
+  async (isBreak) => {
+    if (isBreak) {
+      previouslyFocusedElement = document.activeElement as HTMLElement | null
+      await enterFullscreen()
+      await nextTick()
+      modalRef.value?.focus()
+      return
+    }
+
     await exitFullscreen()
     previouslyFocusedElement?.focus()
-  }
-})
+  },
+)
 
-watch(() => timer.breakSecondsRemaining, (remaining) => {
-  if (remaining <= 0 && timer.isOnBreak) {
-    exitFullscreen()
-  }
-})
+watch(
+  () => timer.breakSecondsRemaining,
+  (remaining) => {
+    if (remaining <= 0 && timer.isOnBreak) {
+      void exitFullscreen()
+    }
+  },
+)
 
 onBeforeUnmount(() => {
   previouslyFocusedElement?.focus()
@@ -98,17 +107,14 @@ onBeforeUnmount(() => {
           class="flex-1 flex flex-col items-center justify-center gap-6 p-8"
           aria-live="polite"
         >
-          <div class="text-6xl" aria-hidden="true">||</div>
+          <div class="text-6xl" aria-hidden="true">&#x23f8;</div>
           <h2 id="break-return-title" class="text-2xl font-bold text-white text-center">Tu pausa activa continua</h2>
           <p class="text-pa-text-muted text-center max-w-md">
             Esta pausa es obligatoria segun la Resolucion 1843 de 2025.
             Regresa a pantalla completa para completar tus ejercicios.
           </p>
-          <button
-            class="btn-primary text-xl px-10 py-5 rounded-2xl"
-            @click="reEnterFullscreen"
-          >
-            Continuar en Pantalla Completa
+          <button class="btn-primary text-xl px-10 py-5 rounded-2xl" @click="reEnterFullscreen">
+            Continuar en pantalla completa
           </button>
           <div class="mt-4">
             <BreakTimerDisplay />
@@ -118,7 +124,7 @@ onBeforeUnmount(() => {
         <div v-else class="flex-1 flex flex-col overflow-hidden">
           <div class="p-6 pb-0 space-y-4">
             <div class="flex items-center justify-between">
-              <h2 id="break-title" class="text-lg font-semibold text-pa-accent">Pausa Activa</h2>
+              <h2 id="break-title" class="text-lg font-semibold text-pa-accent">Pausa activa</h2>
               <div class="text-right">
                 <p class="text-2xl font-bold font-mono text-white">{{ timer.breakTimeFormatted }}</p>
               </div>
@@ -135,7 +141,7 @@ onBeforeUnmount(() => {
 
           <div class="p-4 text-center border-t border-pa-surface-hover/30">
             <p class="text-xs text-pa-text-muted">
-              Resolucion 1843 de 2025 · Sistema de Gestion de Seguridad y Salud en el Trabajo
+              Resolucion 1843 de 2025 - Sistema de Gestion de Seguridad y Salud en el Trabajo
             </p>
             <p class="text-xs text-pa-warning/70 mt-1">
               Si siente dolor intenso, suspenda el ejercicio inmediatamente.

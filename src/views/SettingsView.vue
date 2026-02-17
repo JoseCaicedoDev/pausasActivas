@@ -1,19 +1,56 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useSettingsStore } from '@/stores/settingsStore'
 import { useNotification } from '@/composables/useNotification'
 import { useAlarmSound } from '@/composables/useAlarmSound'
+import SettingRow from '@/components/settings/SettingRow.vue'
+import SettingSelect from '@/components/settings/SettingSelect.vue'
+import SettingToggle from '@/components/settings/SettingToggle.vue'
 
-const settings = useSettingsStore()
+const settingsStore = useSettingsStore()
 const { requestPermission } = useNotification()
 const { playChime } = useAlarmSound()
 
-async function toggleNotifications() {
-  if (!settings.settings.notificationsEnabled) {
-    const granted = await requestPermission()
-    await settings.setNotificationsEnabled(granted)
-  } else {
-    await settings.setNotificationsEnabled(false)
+const workIntervalOptions = [
+  { value: 60, label: '1 h' },
+  { value: 120, label: '2 h (Recomendado)' },
+  { value: 180, label: '3 h' },
+  { value: 240, label: '4 h' },
+  { value: 300, label: '5 h' },
+]
+
+const breakDurationOptions = [
+  { value: 5, label: '5 min' },
+  { value: 10, label: '10 min (Recomendado)' },
+  { value: 15, label: '15 min' },
+]
+
+const startHourOptions = Array.from({ length: 12 }, (_, index) => {
+  const value = index + 6
+  return {
+    value,
+    label: `${value.toString().padStart(2, '0')}:00`,
   }
+})
+
+const endHourOptions = Array.from({ length: 12 }, (_, index) => {
+  const value = index + 13
+  return {
+    value,
+    label: `${value.toString().padStart(2, '0')}:00`,
+  }
+})
+
+const settings = computed(() => settingsStore.settings)
+
+async function toggleNotifications(enabled: boolean) {
+  if (enabled) {
+    const granted = await requestPermission()
+    await settingsStore.setNotificationsEnabled(granted)
+    return
+  }
+
+  await settingsStore.setNotificationsEnabled(false)
 }
 
 function testAlarm() {
@@ -25,71 +62,54 @@ function testAlarm() {
   <div class="space-y-6 pb-4">
     <h2 class="text-xl font-bold text-white">Ajustes</h2>
 
-    <!-- Work interval -->
+    <div v-if="settingsStore.lastError" class="card border-pa-danger/40">
+      <p class="text-sm text-pa-danger">{{ settingsStore.lastError.message }}</p>
+    </div>
+
     <div class="card space-y-3">
       <h3 class="font-semibold text-sm text-pa-text-muted uppercase tracking-wider">Temporizador</h3>
 
-      <div class="flex items-center justify-between">
-        <label for="work-interval" class="text-sm">Intervalo de trabajo (horas)</label>
-        <select
+      <SettingRow label="Intervalo de trabajo (horas)" label-id="work-interval-label">
+        <SettingSelect
           id="work-interval"
-          :value="settings.settings.workIntervalMinutes"
-          class="bg-pa-bg border border-pa-surface-hover rounded-lg px-3 py-1.5 text-sm text-pa-text"
-          @change="settings.setWorkInterval(Number(($event.target as HTMLSelectElement).value))"
-        >
-          <option :value="60">1 h</option>
-          <option :value="120">2 h (Recomendado)</option>
-          <option :value="180">3 h</option>
-          <option :value="240">4 h</option>
-          <option :value="300">5 h</option>
-        </select>
-      </div>
+          :model-value="settings.workIntervalMinutes"
+          :options="workIntervalOptions"
+          @update:model-value="settingsStore.setWorkInterval"
+        />
+      </SettingRow>
 
-      <div class="flex items-center justify-between">
-        <label for="break-duration" class="text-sm">Duracion de pausa (minutos)</label>
-        <select
+      <SettingRow label="Duracion de pausa (minutos)" label-id="break-duration-label">
+        <SettingSelect
           id="break-duration"
-          :value="settings.settings.breakDurationMinutes"
-          class="bg-pa-bg border border-pa-surface-hover rounded-lg px-3 py-1.5 text-sm text-pa-text"
-          @change="settings.setBreakDuration(Number(($event.target as HTMLSelectElement).value))"
-        >
-          <option :value="5">5 min</option>
-          <option :value="10">10 min (Recomendado)</option>
-          <option :value="15">15 min</option>
-        </select>
-      </div>
+          :model-value="settings.breakDurationMinutes"
+          :options="breakDurationOptions"
+          @update:model-value="settingsStore.setBreakDuration"
+        />
+      </SettingRow>
 
-      <div class="flex items-center justify-between">
-        <label for="work-start-hour" class="text-sm">Hora de inicio</label>
-        <select
+      <SettingRow label="Hora de inicio" label-id="work-start-hour-label">
+        <SettingSelect
           id="work-start-hour"
-          :value="settings.settings.workStartHour"
-          class="bg-pa-bg border border-pa-surface-hover rounded-lg px-3 py-1.5 text-sm text-pa-text"
-          @change="settings.setWorkHours(Number(($event.target as HTMLSelectElement).value), settings.settings.workEndHour)"
-        >
-          <option v-for="h in 12" :key="h" :value="h + 5">{{ (h + 5).toString().padStart(2, '0') }}:00</option>
-        </select>
-      </div>
+          :model-value="settings.workStartHour"
+          :options="startHourOptions"
+          @update:model-value="(value) => settingsStore.setWorkHours(value, settings.workEndHour)"
+        />
+      </SettingRow>
 
-      <div class="flex items-center justify-between">
-        <label for="work-end-hour" class="text-sm">Hora de fin</label>
-        <select
+      <SettingRow label="Hora de fin" label-id="work-end-hour-label">
+        <SettingSelect
           id="work-end-hour"
-          :value="settings.settings.workEndHour"
-          class="bg-pa-bg border border-pa-surface-hover rounded-lg px-3 py-1.5 text-sm text-pa-text"
-          @change="settings.setWorkHours(settings.settings.workStartHour, Number(($event.target as HTMLSelectElement).value))"
-        >
-          <option v-for="h in 12" :key="h" :value="h + 12">{{ (h + 12).toString().padStart(2, '0') }}:00</option>
-        </select>
-      </div>
+          :model-value="settings.workEndHour"
+          :options="endHourOptions"
+          @update:model-value="(value) => settingsStore.setWorkHours(settings.workStartHour, value)"
+        />
+      </SettingRow>
     </div>
 
-    <!-- Sound -->
     <div class="card space-y-3">
       <h3 class="font-semibold text-sm text-pa-text-muted uppercase tracking-wider">Sonido</h3>
 
-      <div class="flex items-center justify-between">
-        <label for="alarm-volume" class="text-sm">Volumen de alarma</label>
+      <SettingRow label="Volumen de alarma" label-id="alarm-volume-label">
         <div class="flex items-center gap-3">
           <input
             id="alarm-volume"
@@ -97,20 +117,19 @@ function testAlarm() {
             min="0"
             max="1"
             step="0.1"
-            :value="settings.settings.alarmVolume"
+            :value="settings.alarmVolume"
             class="w-24 accent-pa-accent"
-            @input="settings.setAlarmVolume(Number(($event.target as HTMLInputElement).value))"
+            @input="settingsStore.setAlarmVolume(Number(($event.target as HTMLInputElement).value))"
           />
-          <span class="text-xs text-pa-text-muted w-8">{{ Math.round(settings.settings.alarmVolume * 100) }}%</span>
+          <span class="text-xs text-pa-text-muted w-8">{{ Math.round(settings.alarmVolume * 100) }}%</span>
         </div>
-      </div>
+      </SettingRow>
 
       <button class="text-sm text-pa-accent hover:underline" @click="testAlarm">
         Probar sonido
       </button>
     </div>
 
-    <!-- Theme -->
     <div class="card space-y-3">
       <h3 class="font-semibold text-sm text-pa-text-muted uppercase tracking-wider">Apariencia</h3>
 
@@ -118,81 +137,51 @@ function testAlarm() {
         <button
           :class="[
             'flex-1 py-3 rounded-xl text-sm font-medium transition-colors border',
-            settings.settings.theme === 'dark'
+            settings.theme === 'dark'
               ? 'bg-pa-accent text-pa-bg border-pa-accent'
               : 'bg-pa-surface text-pa-text border-pa-surface-hover hover:border-pa-accent/50'
           ]"
-          @click="settings.setTheme('dark')"
+          @click="settingsStore.setTheme('dark')"
         >
           Oscuro
         </button>
         <button
           :class="[
             'flex-1 py-3 rounded-xl text-sm font-medium transition-colors border',
-            settings.settings.theme === 'pastel'
+            settings.theme === 'pastel'
               ? 'bg-pa-accent text-pa-bg border-pa-accent'
               : 'bg-pa-surface text-pa-text border-pa-surface-hover hover:border-pa-accent/50'
           ]"
-          @click="settings.setTheme('pastel')"
+          @click="settingsStore.setTheme('pastel')"
         >
           Pastel
         </button>
       </div>
     </div>
 
-    <!-- Notifications -->
     <div class="card space-y-3">
       <h3 class="font-semibold text-sm text-pa-text-muted uppercase tracking-wider">Notificaciones</h3>
-
-      <div class="flex items-center justify-between gap-3">
-        <label id="notifications-push-label" class="text-sm">Notificaciones push</label>
-        <button
-          type="button"
-          role="switch"
-          :aria-checked="settings.settings.notificationsEnabled"
-          aria-labelledby="notifications-push-label"
-          :class="[
-            'relative w-12 h-6 rounded-full transition-colors shrink-0',
-            settings.settings.notificationsEnabled ? 'bg-pa-accent' : 'bg-pa-surface-hover'
-          ]"
-          @click="toggleNotifications"
-        >
-          <span
-            :class="[
-              'absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full transition-transform shadow',
-              settings.settings.notificationsEnabled ? 'translate-x-6' : 'translate-x-0.5'
-            ]"
-          />
-        </button>
-      </div>
+      <SettingRow label="Notificaciones push" label-id="notifications-push-label">
+        <SettingToggle
+          :model-value="settings.notificationsEnabled"
+          labelled-by="notifications-push-label"
+          @update:model-value="toggleNotifications"
+        />
+      </SettingRow>
     </div>
 
-    <!-- Auto restart -->
     <div class="card space-y-3">
-      <div class="flex items-center justify-between gap-3">
-        <div class="min-w-0">
-          <label id="auto-start-label" class="text-sm font-medium">Auto-reiniciar ciclo</label>
-          <p class="text-xs text-pa-text-muted">Iniciar siguiente ciclo de trabajo automaticamente</p>
-        </div>
-        <button
-          type="button"
-          role="switch"
-          :aria-checked="settings.settings.autoStartNextCycle"
-          aria-labelledby="auto-start-label"
-          :class="[
-            'relative w-12 h-6 rounded-full transition-colors shrink-0',
-            settings.settings.autoStartNextCycle ? 'bg-pa-accent' : 'bg-pa-surface-hover'
-          ]"
-          @click="settings.setAutoStartNextCycle(!settings.settings.autoStartNextCycle)"
-        >
-          <span
-            :class="[
-              'absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full transition-transform shadow',
-              settings.settings.autoStartNextCycle ? 'translate-x-6' : 'translate-x-0.5'
-            ]"
-          />
-        </button>
-      </div>
+      <SettingRow
+        label="Auto-reiniciar ciclo"
+        hint="Iniciar siguiente ciclo de trabajo automaticamente"
+        label-id="auto-start-label"
+      >
+        <SettingToggle
+          :model-value="settings.autoStartNextCycle"
+          labelled-by="auto-start-label"
+          @update:model-value="settingsStore.setAutoStartNextCycle"
+        />
+      </SettingRow>
     </div>
   </div>
 </template>

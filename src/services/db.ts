@@ -1,17 +1,6 @@
 import { apiRequest } from './apiClient'
 import type { BreakSession, DailyRecord } from '@/types/session'
-
-interface SessionCreatePayload {
-  date: string
-  startedAt: string
-  exerciseIds: string[]
-  durationPlannedSeconds: number
-}
-
-interface SessionCompletePayload {
-  completedAt: string
-  durationActualSeconds: number
-}
+import type { SessionCompletePayload, SessionCreatePayload } from '@/services/contracts/history'
 
 export async function createSession(payload: SessionCreatePayload): Promise<BreakSession> {
   return apiRequest<BreakSession>('/history/sessions', {

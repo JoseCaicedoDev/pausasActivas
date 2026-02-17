@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { ApiError } from '@/services/apiClient'
+import AuthFormField from '@/components/forms/AuthFormField.vue'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -26,7 +27,7 @@ async function submit() {
 
   isLoading.value = true
   try {
-    await auth.register({ email: email.value, password: password.value })
+    await auth.register({ email: email.value.trim(), password: password.value })
     await router.push('/panel')
   } catch (error) {
     if (error instanceof ApiError) {
@@ -45,46 +46,33 @@ async function submit() {
     <div class="card w-full max-w-md space-y-5">
       <h2 class="text-xl font-bold text-white">Crear cuenta</h2>
       <form class="space-y-4" @submit.prevent="submit">
-        <div class="space-y-1">
-          <label for="register-email" class="text-sm text-pa-text-muted">Correo</label>
-          <input
-            id="register-email"
-            v-model.trim="email"
-            name="email"
-            type="email"
-            autocomplete="email"
-            spellcheck="false"
-            required
-            class="w-full rounded-xl border border-pa-surface-hover bg-pa-bg px-3 py-2 text-sm"
-          />
-        </div>
-        <div class="space-y-1">
-          <label for="register-password" class="text-sm text-pa-text-muted">Contrasena</label>
-          <input
-            id="register-password"
-            v-model="password"
-            name="password"
-            type="password"
-            autocomplete="new-password"
-            required
-            class="w-full rounded-xl border border-pa-surface-hover bg-pa-bg px-3 py-2 text-sm"
-          />
-        </div>
-        <div class="space-y-1">
-          <label for="register-confirm-password" class="text-sm text-pa-text-muted">Confirmar contrasena</label>
-          <input
-            id="register-confirm-password"
-            v-model="confirmPassword"
-            name="confirmPassword"
-            type="password"
-            autocomplete="new-password"
-            required
-            class="w-full rounded-xl border border-pa-surface-hover bg-pa-bg px-3 py-2 text-sm"
-          />
-        </div>
+        <AuthFormField
+          id="register-email"
+          v-model="email"
+          label="Correo"
+          name="email"
+          type="email"
+          autocomplete="email"
+        />
+        <AuthFormField
+          id="register-password"
+          v-model="password"
+          label="Contrasena"
+          name="password"
+          type="password"
+          autocomplete="new-password"
+        />
+        <AuthFormField
+          id="register-confirm-password"
+          v-model="confirmPassword"
+          label="Confirmar contrasena"
+          name="confirmPassword"
+          type="password"
+          autocomplete="new-password"
+        />
         <p v-if="errorMessage" class="text-xs text-red-400" aria-live="polite">{{ errorMessage }}</p>
         <button type="submit" class="btn-primary w-full" :disabled="isLoading">
-          {{ isLoading ? 'Creando…' : 'Crear cuenta' }}
+          {{ isLoading ? 'Creando...' : 'Crear cuenta' }}
         </button>
       </form>
       <p class="text-xs text-pa-text-muted text-center">

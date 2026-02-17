@@ -10,9 +10,9 @@ const showBanner = ref(false)
 let deferredPrompt: BeforeInstallPromptEvent | null = null
 
 onMounted(() => {
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault()
-    deferredPrompt = e as BeforeInstallPromptEvent
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault()
+    deferredPrompt = event as BeforeInstallPromptEvent
     showBanner.value = true
   })
 })
@@ -44,7 +44,7 @@ function dismiss() {
   >
     <div v-if="showBanner" class="fixed bottom-20 left-4 right-4 z-50 max-w-md mx-auto">
       <div class="card flex items-center gap-4" role="status" aria-live="polite">
-        <div class="text-3xl" aria-hidden="true">app</div>
+        <div class="text-3xl" aria-hidden="true">&#x1F4F2;</div>
         <div class="flex-1">
           <p class="font-medium text-sm">Instalar Pausas Activas</p>
           <p class="text-xs text-pa-text-muted">Acceso rapido desde el escritorio</p>
