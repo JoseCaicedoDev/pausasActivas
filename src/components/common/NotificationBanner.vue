@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>
@@ -43,8 +43,8 @@ function dismiss() {
     leave-to-class="translate-y-full"
   >
     <div v-if="showBanner" class="fixed bottom-20 left-4 right-4 z-50 max-w-md mx-auto">
-      <div class="card flex items-center gap-4">
-        <div class="text-3xl">📲</div>
+      <div class="card flex items-center gap-4" role="status" aria-live="polite">
+        <div class="text-3xl" aria-hidden="true">app</div>
         <div class="flex-1">
           <p class="font-medium text-sm">Instalar Pausas Activas</p>
           <p class="text-xs text-pa-text-muted">Acceso rapido desde el escritorio</p>

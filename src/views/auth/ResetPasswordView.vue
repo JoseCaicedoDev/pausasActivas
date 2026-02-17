@@ -34,7 +34,7 @@ async function submit() {
   isLoading.value = true
   try {
     await resetPassword(token.value, password.value)
-    successMessage.value = 'Contrasena actualizada. Redirigiendo a login...'
+    successMessage.value = 'Contrasena actualizada. Redirigiendo a login…'
     setTimeout(() => {
       router.push('/login')
     }, 1200)
@@ -56,27 +56,33 @@ async function submit() {
       <h2 class="text-xl font-bold text-white">Restablecer contrasena</h2>
       <form class="space-y-4" @submit.prevent="submit">
         <div class="space-y-1">
-          <label class="text-sm text-pa-text-muted">Nueva contrasena</label>
+          <label for="reset-password" class="text-sm text-pa-text-muted">Nueva contrasena</label>
           <input
+            id="reset-password"
             v-model="password"
+            name="password"
             type="password"
+            autocomplete="new-password"
             required
             class="w-full rounded-xl border border-pa-surface-hover bg-pa-bg px-3 py-2 text-sm"
           />
         </div>
         <div class="space-y-1">
-          <label class="text-sm text-pa-text-muted">Confirmar contrasena</label>
+          <label for="reset-confirm-password" class="text-sm text-pa-text-muted">Confirmar contrasena</label>
           <input
+            id="reset-confirm-password"
             v-model="confirmPassword"
+            name="confirmPassword"
             type="password"
+            autocomplete="new-password"
             required
             class="w-full rounded-xl border border-pa-surface-hover bg-pa-bg px-3 py-2 text-sm"
           />
         </div>
-        <p v-if="errorMessage" class="text-xs text-red-400">{{ errorMessage }}</p>
-        <p v-if="successMessage" class="text-xs text-green-400">{{ successMessage }}</p>
+        <p v-if="errorMessage" class="text-xs text-red-400" aria-live="polite">{{ errorMessage }}</p>
+        <p v-if="successMessage" class="text-xs text-green-400" aria-live="polite">{{ successMessage }}</p>
         <button type="submit" class="btn-primary w-full" :disabled="isLoading">
-          {{ isLoading ? 'Actualizando...' : 'Actualizar contrasena' }}
+          {{ isLoading ? 'Actualizando…' : 'Actualizar contrasena' }}
         </button>
       </form>
     </div>

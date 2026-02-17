@@ -36,6 +36,14 @@ function barColor(percent: number): string {
 <template>
   <div class="card">
     <h3 class="text-sm font-semibold text-pa-text-muted mb-4">Ultimos 7 dias</h3>
+    <div class="sr-only">
+      <h4>Resumen semanal accesible</h4>
+      <ul>
+        <li v-for="(day, i) in days" :key="`summary-${i}`">
+          {{ day.label }}: {{ day.completed }} de {{ day.expected }} pausas ({{ day.percent }}%)
+        </li>
+      </ul>
+    </div>
     <div class="flex items-end justify-between gap-2 h-32">
       <div
         v-for="(day, i) in days"

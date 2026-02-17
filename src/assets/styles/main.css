@@ -19,13 +19,13 @@
   .btn-primary {
     @apply px-6 py-3 bg-pa-accent text-pa-bg font-semibold rounded-xl
            hover:bg-sky-300 active:bg-sky-500 transition-colors
-           focus:outline-none focus:ring-2 focus:ring-pa-accent focus:ring-offset-2 focus:ring-offset-pa-bg;
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pa-accent focus-visible:ring-offset-2 focus-visible:ring-offset-pa-bg;
   }
 
   .btn-secondary {
     @apply px-6 py-3 bg-pa-surface text-pa-text font-medium rounded-xl border border-pa-surface-hover
            hover:bg-pa-surface-hover transition-colors
-           focus:outline-none focus:ring-2 focus:ring-pa-accent focus:ring-offset-2 focus:ring-offset-pa-bg;
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pa-accent focus-visible:ring-offset-2 focus-visible:ring-offset-pa-bg;
   }
 
   .card {

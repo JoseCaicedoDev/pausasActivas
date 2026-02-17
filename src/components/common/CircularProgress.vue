@@ -7,11 +7,13 @@ const props = withDefaults(defineProps<{
   strokeWidth?: number
   color?: string
   trackColor?: string
+  label?: string
 }>(), {
   size: 200,
   strokeWidth: 8,
   color: '#38bdf8',
   trackColor: '#334155',
+  label: 'Progreso',
 })
 
 const radius = computed(() => (props.size - props.strokeWidth) / 2)
@@ -21,7 +23,15 @@ const center = computed(() => props.size / 2)
 </script>
 
 <template>
-  <div class="relative inline-flex items-center justify-center" :style="{ width: `${size}px`, height: `${size}px` }">
+  <div
+    class="relative inline-flex items-center justify-center"
+    :style="{ width: `${size}px`, height: `${size}px` }"
+    role="progressbar"
+    :aria-label="label"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    :aria-valuenow="Math.round(Math.min(1, Math.max(0, progress)) * 100)"
+  >
     <svg :width="size" :height="size" class="transform -rotate-90">
       <circle
         :cx="center"

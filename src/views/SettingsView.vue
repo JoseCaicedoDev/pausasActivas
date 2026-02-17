@@ -30,8 +30,9 @@ function testAlarm() {
       <h3 class="font-semibold text-sm text-pa-text-muted uppercase tracking-wider">Temporizador</h3>
 
       <div class="flex items-center justify-between">
-        <label class="text-sm">Intervalo de trabajo (horas)</label>
+        <label for="work-interval" class="text-sm">Intervalo de trabajo (horas)</label>
         <select
+          id="work-interval"
           :value="settings.settings.workIntervalMinutes"
           class="bg-pa-bg border border-pa-surface-hover rounded-lg px-3 py-1.5 text-sm text-pa-text"
           @change="settings.setWorkInterval(Number(($event.target as HTMLSelectElement).value))"
@@ -45,8 +46,9 @@ function testAlarm() {
       </div>
 
       <div class="flex items-center justify-between">
-        <label class="text-sm">Duracion de pausa (minutos)</label>
+        <label for="break-duration" class="text-sm">Duracion de pausa (minutos)</label>
         <select
+          id="break-duration"
           :value="settings.settings.breakDurationMinutes"
           class="bg-pa-bg border border-pa-surface-hover rounded-lg px-3 py-1.5 text-sm text-pa-text"
           @change="settings.setBreakDuration(Number(($event.target as HTMLSelectElement).value))"
@@ -58,8 +60,9 @@ function testAlarm() {
       </div>
 
       <div class="flex items-center justify-between">
-        <label class="text-sm">Hora de inicio</label>
+        <label for="work-start-hour" class="text-sm">Hora de inicio</label>
         <select
+          id="work-start-hour"
           :value="settings.settings.workStartHour"
           class="bg-pa-bg border border-pa-surface-hover rounded-lg px-3 py-1.5 text-sm text-pa-text"
           @change="settings.setWorkHours(Number(($event.target as HTMLSelectElement).value), settings.settings.workEndHour)"
@@ -69,8 +72,9 @@ function testAlarm() {
       </div>
 
       <div class="flex items-center justify-between">
-        <label class="text-sm">Hora de fin</label>
+        <label for="work-end-hour" class="text-sm">Hora de fin</label>
         <select
+          id="work-end-hour"
           :value="settings.settings.workEndHour"
           class="bg-pa-bg border border-pa-surface-hover rounded-lg px-3 py-1.5 text-sm text-pa-text"
           @change="settings.setWorkHours(settings.settings.workStartHour, Number(($event.target as HTMLSelectElement).value))"
@@ -85,9 +89,10 @@ function testAlarm() {
       <h3 class="font-semibold text-sm text-pa-text-muted uppercase tracking-wider">Sonido</h3>
 
       <div class="flex items-center justify-between">
-        <label class="text-sm">Volumen de alarma</label>
+        <label for="alarm-volume" class="text-sm">Volumen de alarma</label>
         <div class="flex items-center gap-3">
           <input
+            id="alarm-volume"
             type="range"
             min="0"
             max="1"
@@ -112,7 +117,7 @@ function testAlarm() {
       <div class="flex gap-3">
         <button
           :class="[
-            'flex-1 py-3 rounded-xl text-sm font-medium transition-all border',
+            'flex-1 py-3 rounded-xl text-sm font-medium transition-colors border',
             settings.settings.theme === 'dark'
               ? 'bg-pa-accent text-pa-bg border-pa-accent'
               : 'bg-pa-surface text-pa-text border-pa-surface-hover hover:border-pa-accent/50'
@@ -123,7 +128,7 @@ function testAlarm() {
         </button>
         <button
           :class="[
-            'flex-1 py-3 rounded-xl text-sm font-medium transition-all border',
+            'flex-1 py-3 rounded-xl text-sm font-medium transition-colors border',
             settings.settings.theme === 'pastel'
               ? 'bg-pa-accent text-pa-bg border-pa-accent'
               : 'bg-pa-surface text-pa-text border-pa-surface-hover hover:border-pa-accent/50'
@@ -140,8 +145,12 @@ function testAlarm() {
       <h3 class="font-semibold text-sm text-pa-text-muted uppercase tracking-wider">Notificaciones</h3>
 
       <div class="flex items-center justify-between gap-3">
-        <label class="text-sm">Notificaciones push</label>
+        <label id="notifications-push-label" class="text-sm">Notificaciones push</label>
         <button
+          type="button"
+          role="switch"
+          :aria-checked="settings.settings.notificationsEnabled"
+          aria-labelledby="notifications-push-label"
           :class="[
             'relative w-12 h-6 rounded-full transition-colors shrink-0',
             settings.settings.notificationsEnabled ? 'bg-pa-accent' : 'bg-pa-surface-hover'
@@ -162,10 +171,14 @@ function testAlarm() {
     <div class="card space-y-3">
       <div class="flex items-center justify-between gap-3">
         <div class="min-w-0">
-          <label class="text-sm font-medium">Auto-reiniciar ciclo</label>
+          <label id="auto-start-label" class="text-sm font-medium">Auto-reiniciar ciclo</label>
           <p class="text-xs text-pa-text-muted">Iniciar siguiente ciclo de trabajo automaticamente</p>
         </div>
         <button
+          type="button"
+          role="switch"
+          :aria-checked="settings.settings.autoStartNextCycle"
+          aria-labelledby="auto-start-label"
           :class="[
             'relative w-12 h-6 rounded-full transition-colors shrink-0',
             settings.settings.autoStartNextCycle ? 'bg-pa-accent' : 'bg-pa-surface-hover'

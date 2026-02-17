@@ -33,18 +33,22 @@ async function submit() {
       <h2 class="text-xl font-bold text-white">Olvide mi contrasena</h2>
       <form class="space-y-4" @submit.prevent="submit">
         <div class="space-y-1">
-          <label class="text-sm text-pa-text-muted">Correo</label>
+          <label for="forgot-email" class="text-sm text-pa-text-muted">Correo</label>
           <input
+            id="forgot-email"
             v-model.trim="email"
+            name="email"
             type="email"
+            autocomplete="email"
+            spellcheck="false"
             required
             class="w-full rounded-xl border border-pa-surface-hover bg-pa-bg px-3 py-2 text-sm"
           />
         </div>
-        <p v-if="errorMessage" class="text-xs text-red-400">{{ errorMessage }}</p>
-        <p v-if="successMessage" class="text-xs text-green-400">{{ successMessage }}</p>
+        <p v-if="errorMessage" class="text-xs text-red-400" aria-live="polite">{{ errorMessage }}</p>
+        <p v-if="successMessage" class="text-xs text-green-400" aria-live="polite">{{ successMessage }}</p>
         <button type="submit" class="btn-primary w-full" :disabled="isLoading">
-          {{ isLoading ? 'Enviando...' : 'Enviar enlace' }}
+          {{ isLoading ? 'Enviando…' : 'Enviar enlace' }}
         </button>
       </form>
       <router-link class="text-xs text-pa-accent hover:underline" to="/login">Volver a login</router-link>

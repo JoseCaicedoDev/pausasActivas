@@ -24,6 +24,7 @@ const complianceColor = computed(() => {
         :size="72"
         :stroke-width="6"
         :color="complianceColor"
+        label="Cumplimiento de pausas del dia"
       >
         <span class="text-xs font-bold">{{ history.todayCompliancePercent }}%</span>
       </CircularProgress>

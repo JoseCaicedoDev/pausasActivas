@@ -28,7 +28,7 @@ const currentRoute = computed(() => route.name)
             : 'text-pa-text-muted hover:text-pa-text'
         ]"
       >
-        <span class="text-lg">{{ tab.icon }}</span>
+        <span class="text-lg" aria-hidden="true">{{ tab.icon }}</span>
         <span class="text-[10px] mt-0.5 font-medium">{{ tab.label }}</span>
       </router-link>
     </div>

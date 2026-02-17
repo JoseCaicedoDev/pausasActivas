@@ -46,35 +46,45 @@ async function submit() {
       <h2 class="text-xl font-bold text-white">Crear cuenta</h2>
       <form class="space-y-4" @submit.prevent="submit">
         <div class="space-y-1">
-          <label class="text-sm text-pa-text-muted">Correo</label>
+          <label for="register-email" class="text-sm text-pa-text-muted">Correo</label>
           <input
+            id="register-email"
             v-model.trim="email"
+            name="email"
             type="email"
+            autocomplete="email"
+            spellcheck="false"
             required
             class="w-full rounded-xl border border-pa-surface-hover bg-pa-bg px-3 py-2 text-sm"
           />
         </div>
         <div class="space-y-1">
-          <label class="text-sm text-pa-text-muted">Contrasena</label>
+          <label for="register-password" class="text-sm text-pa-text-muted">Contrasena</label>
           <input
+            id="register-password"
             v-model="password"
+            name="password"
             type="password"
+            autocomplete="new-password"
             required
             class="w-full rounded-xl border border-pa-surface-hover bg-pa-bg px-3 py-2 text-sm"
           />
         </div>
         <div class="space-y-1">
-          <label class="text-sm text-pa-text-muted">Confirmar contrasena</label>
+          <label for="register-confirm-password" class="text-sm text-pa-text-muted">Confirmar contrasena</label>
           <input
+            id="register-confirm-password"
             v-model="confirmPassword"
+            name="confirmPassword"
             type="password"
+            autocomplete="new-password"
             required
             class="w-full rounded-xl border border-pa-surface-hover bg-pa-bg px-3 py-2 text-sm"
           />
         </div>
-        <p v-if="errorMessage" class="text-xs text-red-400">{{ errorMessage }}</p>
+        <p v-if="errorMessage" class="text-xs text-red-400" aria-live="polite">{{ errorMessage }}</p>
         <button type="submit" class="btn-primary w-full" :disabled="isLoading">
-          {{ isLoading ? 'Creando...' : 'Crear cuenta' }}
+          {{ isLoading ? 'Creando…' : 'Crear cuenta' }}
         </button>
       </form>
       <p class="text-xs text-pa-text-muted text-center">

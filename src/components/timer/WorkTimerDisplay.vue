@@ -19,6 +19,7 @@ const progressColor = computed(() => {
       :size="240"
       :stroke-width="10"
       :color="progressColor"
+      label="Progreso del ciclo de trabajo"
     >
       <div class="text-center">
         <p class="text-4xl font-bold tracking-wider font-mono">

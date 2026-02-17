@@ -20,8 +20,14 @@ const isAuthRoute = computed(() => Boolean(route.meta.publicOnly))
   <RouterView v-else-if="!auth.isAuthenticated || isAuthRoute" />
 
   <div v-else class="min-h-screen pb-16">
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-pa-accent focus:text-pa-bg focus:px-3 focus:py-2 focus:rounded-lg"
+    >
+      Saltar al contenido principal
+    </a>
     <AppHeader />
-    <main class="max-w-2xl mx-auto px-4 py-6">
+    <main id="main-content" class="max-w-2xl mx-auto px-4 py-6" tabindex="-1">
       <RouterView />
     </main>
     <NavigationBar />

@@ -10,7 +10,7 @@ const auth = useAuthStore()
   <header class="bg-pa-surface/80 backdrop-blur-sm border-b border-pa-surface-hover/30 px-4 py-3 sticky top-0 z-40">
     <div class="max-w-2xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-2">
-        <span class="text-xl">🧘</span>
+        <span class="text-xl" aria-hidden="true">PA</span>
         <h1 class="font-bold text-lg text-white">Pausas Activas</h1>
       </div>
       <div class="flex items-center gap-3">

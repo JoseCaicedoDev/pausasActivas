@@ -38,26 +38,33 @@ async function submit() {
       <h2 class="text-xl font-bold text-white">Iniciar sesion</h2>
       <form class="space-y-4" @submit.prevent="submit">
         <div class="space-y-1">
-          <label class="text-sm text-pa-text-muted">Correo</label>
+          <label for="login-email" class="text-sm text-pa-text-muted">Correo</label>
           <input
+            id="login-email"
             v-model.trim="email"
+            name="email"
             type="email"
+            autocomplete="email"
+            spellcheck="false"
             required
             class="w-full rounded-xl border border-pa-surface-hover bg-pa-bg px-3 py-2 text-sm"
           />
         </div>
         <div class="space-y-1">
-          <label class="text-sm text-pa-text-muted">Contrasena</label>
+          <label for="login-password" class="text-sm text-pa-text-muted">Contrasena</label>
           <input
+            id="login-password"
             v-model="password"
+            name="password"
             type="password"
+            autocomplete="current-password"
             required
             class="w-full rounded-xl border border-pa-surface-hover bg-pa-bg px-3 py-2 text-sm"
           />
         </div>
-        <p v-if="errorMessage" class="text-xs text-red-400">{{ errorMessage }}</p>
+        <p v-if="errorMessage" class="text-xs text-red-400" aria-live="polite">{{ errorMessage }}</p>
         <button type="submit" class="btn-primary w-full" :disabled="isLoading">
-          {{ isLoading ? 'Ingresando...' : 'Ingresar' }}
+          {{ isLoading ? 'Ingresando…' : 'Ingresar' }}
         </button>
       </form>
       <div class="flex items-center justify-between text-xs">
