@@ -9,4 +9,4 @@ Disallow: /historial
 Disallow: /ajustes
 Disallow: /acerca-de
 
-Sitemap: https://josecaicedodev.github.io/pausasActivas/sitemap.xml
+Sitemap: https://pausas.gira360.com/sitemap.xml

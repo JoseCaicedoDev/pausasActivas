@@ -9,8 +9,8 @@ export interface SeoRouteMeta {
 }
 
 const SITE_NAME = 'Pausas Activas'
-const SITE_ORIGIN = 'https://josecaicedodev.github.io'
-const SITE_BASE_PATH = '/pausasActivas'
+const SITE_ORIGIN = 'https://pausas.gira360.com'
+const SITE_BASE_PATH = ''
 
 export const DEFAULT_SEO_TITLE = 'Pausas Activas | SST Colombia y Bienestar Laboral'
 export const DEFAULT_SEO_DESCRIPTION =
