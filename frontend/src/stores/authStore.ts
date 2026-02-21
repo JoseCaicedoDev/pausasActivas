@@ -44,11 +44,8 @@ export const useAuthStore = defineStore('auth', () => {
         } catch (error) {
           lastError.value = toAppError('auth', error, 'No fue posible validar la sesion', 'auth_me_failed')
         }
-      }
-
-      const refreshed = await tryRefresh()
-      if (refreshed) {
-        await useSettingsStore().loadSettings()
+        const refreshed = await tryRefresh()
+        if (refreshed) await useSettingsStore().loadSettings()
       }
     } finally {
       isBootstrapping.value = false

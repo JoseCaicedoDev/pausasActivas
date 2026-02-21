@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     frontend_origin: str
     frontend_reset_url: str
     refresh_cookie_name: str = "pausas_refresh_token"
+    cookie_secure: bool = True
     smtp_host: str | None = None
     smtp_port: int = 587
     smtp_user: str | None = None

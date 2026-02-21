@@ -35,7 +35,7 @@ def _set_refresh_cookie(response: Response, token: str) -> None:
         key=settings.refresh_cookie_name,
         value=token,
         httponly=True,
-        secure=True,
+        secure=settings.cookie_secure,
         samesite="lax",
         max_age=settings.refresh_token_expire_days * 24 * 60 * 60,
         path="/",
