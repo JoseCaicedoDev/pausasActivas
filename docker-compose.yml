@@ -1,0 +1,26 @@
+name: pausas-activas
+
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pausas-api
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9500:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: pausas-frontend
+    ports:
+      - "9501:80"
+    restart: unless-stopped
+    depends_on:
+      - api
