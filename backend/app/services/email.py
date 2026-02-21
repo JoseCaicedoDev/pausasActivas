@@ -1,15 +1,26 @@
+import base64
 import smtplib
 from email.message import EmailMessage
+from pathlib import Path
 import logging
 
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
-_LOGO_URL = "https://pausas.gira360.com/icons/icon-512x512.png"
+_ASSETS_DIR = Path(__file__).parent.parent / "assets"
+
+
+def _logo_src() -> str:
+    logo_path = _ASSETS_DIR / "logo.png"
+    if logo_path.exists():
+        b64 = base64.b64encode(logo_path.read_bytes()).decode()
+        return f"data:image/png;base64,{b64}"
+    return "https://pausas.gira360.com/icons/icon-512x512.png"
 
 
 def _build_reset_html(reset_link: str) -> str:
+    logo = _logo_src()
     return f"""<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -29,7 +40,7 @@ def _build_reset_html(reset_link: str) -> str:
           <!-- Header -->
           <tr>
             <td align="center" style="padding:32px 32px 24px;">
-              <img src="{_LOGO_URL}" alt="Pausas Activas" width="64" height="64"
+              <img src="{logo}" alt="Pausas Activas" width="64" height="64"
                    style="border-radius:12px;display:block;margin:0 auto 16px;" />
               <span style="font-size:22px;font-weight:700;color:#cbd5e1;letter-spacing:-0.3px;">
                 Pausas Activas
